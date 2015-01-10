@@ -25,7 +25,7 @@ decode_value = True
 class Loader(object):
 
 	def __init__(self, db_or_model, filename, fields, field_names,
-		has_header=True, db_table=None, **reader_kwargs):
+		has_header=True, db_table=None, ignore_fields=None, **reader_kwargs):
 		self.filename = filename
 		self.fields = fields
 		self.field_names = field_names
@@ -44,6 +44,11 @@ class Loader(object):
 			self.db_table = self.model._meta.db_table
 			self.fields = self.model._meta.get_fields()
 			self.field_names = self.model._meta.get_field_names()
+
+			if ignore_fields is not None:
+				for fname in self.field_names:
+					if fname in ignore_fields:
+						self.field_names.pop(fname)
 			# If using an auto-incrementing primary key, ignore it.
 			if self.model._meta.auto_increment:
 				self.fields = self.fields[1:]
@@ -85,6 +90,6 @@ class XLSLoader(Loader):
 		return XLSReader(filename, **reader_kwargs)
 
 def load_xls(db_or_model, filename, fields=None, field_names=None,
-             has_header=True, db_table=None, **reader_kwargs):
-    loader = XLSLoader(db_or_model, filename, fields, field_names, has_header, db_table, **reader_kwargs)
+             has_header=True, db_table=None, ignore_fields=None, **reader_kwargs):
+    loader = XLSLoader(db_or_model, filename, fields, field_names, has_header, db_table, ignore_fields, **reader_kwargs)
     return loader.load()
