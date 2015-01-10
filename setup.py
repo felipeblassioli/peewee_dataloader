@@ -8,6 +8,8 @@ setup(
     author_email='felipeblassioli@gmail.com',
     description='Helpers to load that into a Peewee Database',
     packages=find_packages(),
+    include_package_data=True,
+    zip_safe=False,
     platforms='any',
     install_requires=[
         'peewee>=2.4.5',
