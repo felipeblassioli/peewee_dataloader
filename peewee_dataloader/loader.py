@@ -48,7 +48,7 @@ class Loader(object):
 			if ignore_fields is not None:
 				for fname in self.field_names:
 					if fname in ignore_fields:
-						self.field_names.pop(fname)
+						self.field_names.remove(fname)
 			# If using an auto-incrementing primary key, ignore it.
 			if self.model._meta.auto_increment:
 				self.fields = self.fields[1:]
