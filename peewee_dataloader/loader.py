@@ -18,18 +18,19 @@ Provide explicit field types and/or field names:
 
 from peewee import *
 from peewee import Database
-from readers.xls import XLSReader
+from readers import XLSReader, BSONReader
 
 decode_value = True
 
 class Loader(object):
 
 	def __init__(self, db_or_model, filename, fields, field_names,
-		has_header=True, db_table=None, ignore_fields=None, **reader_kwargs):
+		has_header=True, db_table=None, ignore_fields=None, process_row=None, **reader_kwargs):
 		self.filename = filename
 		self.fields = fields
 		self.field_names = field_names
 		self.has_header = has_header
+		self.process_row = process_row
 		self.reader_kwargs = reader_kwargs
 
 		if isinstance(db_or_model, Database):
@@ -76,6 +77,8 @@ class Loader(object):
 			with self.database.transaction():
 				ModelClass.create_table(fail_silently=True)
 				for row in reader:
+					if self.process_row is not None:
+						row = self.process_row(row)
 					insert = dict()
 					for field_name, value in zip(self.field_names, row):
 						insert[field_name] = value
@@ -88,7 +91,16 @@ class XLSLoader(Loader):
 	def get_reader(self,filename,**reader_kwargs):
 		return XLSReader(filename, **reader_kwargs)
 
+class BSONLoader(Loader):
+	def get_reader(self,filename,**reader_kwargs):
+		return BSONReader(filename, **reader_kwargs)
+
 def load_xls(db_or_model, filename, fields=None, field_names=None,
-             has_header=True, db_table=None, ignore_fields=None, **reader_kwargs):
-    loader = XLSLoader(db_or_model, filename, fields, field_names, has_header, db_table, ignore_fields, **reader_kwargs)
+             has_header=True, db_table=None, ignore_fields=None, process_row=None, **reader_kwargs):
+    loader = XLSLoader(db_or_model, filename, fields, field_names, has_header, db_table, ignore_fields, process_row, **reader_kwargs)
     return loader.load()
+
+def load_bson(db_or_model, filename, fields=None, field_names=None,
+         has_header=True, db_table=None, ignore_fields=None, process_row=None, **reader_kwargs):
+	loader = BSONLoader(db_or_model, filename, fields, field_names, has_header, db_table, ignore_fields, process_row, **reader_kwargs)
+	return loader.load()

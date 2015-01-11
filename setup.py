@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='PeeweeDataLoader',
-    version='0.0.2',
+    version='0.0.3',
     url='https://github.com/felipeblassioli/peewee_dataloader',
     author='Felipe Blassioli',
     author_email='felipeblassioli@gmail.com',
@@ -13,6 +13,6 @@ setup(
     platforms='any',
     install_requires=[
         'peewee>=2.4.5',
-        'xlrd>=0.9.3'
+        'xlrd>=0.9.3',
     ]
 )
