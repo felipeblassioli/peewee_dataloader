@@ -79,6 +79,8 @@ class Loader(object):
 				for row in reader:
 					if self.process_row is not None:
 						row = self.process_row(row)
+					if row is None:
+						continue
 					insert = dict()
 					for field_name, value in zip(self.field_names, row):
 						insert[field_name] = value
