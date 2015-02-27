@@ -31,7 +31,7 @@ class Loader(object):
 		self.field_names = field_names
 		self.has_header = has_header
 		self.process_row = process_row
-		self.after_filter = after_filter or lambda d: d
+		self.after_filter = after_filter or (lambda d: d)
 		self.reader_kwargs = reader_kwargs
 
 		if isinstance(db_or_model, Database):
