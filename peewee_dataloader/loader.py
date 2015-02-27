@@ -25,13 +25,13 @@ decode_value = True
 class Loader(object):
 
 	def __init__(self, db_or_model, filename, fields, field_names,
-		has_header=True, db_table=None, ignore_fields=None, process_row=None, after_filter=lambda d: d, **reader_kwargs):
+		has_header=True, db_table=None, ignore_fields=None, process_row=None, after_filter=None, **reader_kwargs):
 		self.filename = filename
 		self.fields = fields
 		self.field_names = field_names
 		self.has_header = has_header
 		self.process_row = process_row
-		self.after_filter = after_filter
+		self.after_filter = after_filter or lambda d: d
 		self.reader_kwargs = reader_kwargs
 
 		if isinstance(db_or_model, Database):
