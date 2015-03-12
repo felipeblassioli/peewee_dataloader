@@ -68,7 +68,8 @@ class Loader(object):
 		klass._meta.db_table = self.db_table
 		return klass
 
-	def load(self):
+	def load(self, bulk_size=5000):
+		data_source = []
 		with self.get_reader(self.filename, **self.reader_kwargs) as reader:
 			if self.has_header:
 				next(reader)
@@ -86,9 +87,16 @@ class Loader(object):
 					for field_name, value in zip(self.field_names, row):
 						insert[field_name] = value
 					insert = self.after_filter(insert)
-					if insert:	
-						ModelClass.insert(**insert).execute()
 
+					if insert:
+						data_source.append(insert)
+						if len(data_source) > bulk_size:
+							ModelClass.insert_many(data_source).execute()
+							del data_source[:]
+
+				if len(data_source) > 0:
+					ModelClass.insert_many(data_source).execute()
+					
 			return ModelClass
 
 class XLSLoader(Loader):
